@@ -4,7 +4,7 @@ export default function Home() {
   const [messages, setMessages] = useState([
     {
       role: "assistant",
-      content: "🚀 Neural Interface Online. I'm AP-Prime, your AI Real Estate Assistant. How can I help you find your perfect property in Toronto?",
+      content: "🏠 Welcome! I'm AP-Prime, your AI Real Estate Assistant. How can I help you find your perfect property in Toronto?",
     },
   ]);
   const [input, setInput] = useState("");
@@ -193,7 +193,7 @@ export default function Home() {
       <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center">
         <div className="text-center">
           <div className="text-2xl font-mono text-cyan-400 mb-4 animate-pulse-glow">
-            INITIALIZING NEURAL INTERFACE...
+            LOADING PROPERTY SYSTEM...
           </div>
           <div className="w-16 h-1 bg-gradient-to-r from-cyan-500 to-purple-500 animate-electric-pulse mx-auto"></div>
         </div>
@@ -227,7 +227,7 @@ export default function Home() {
             <div className="space-y-8 animate-fadeInUp">
               <div className="space-y-4">
                 <div className="text-sm font-mono text-cyan-400 tracking-widest">
-                  NEURAL REAL ESTATE MATRIX v2.0
+                  TORONTO REAL ESTATE PLATFORM v2.0
                 </div>
                 <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
                   <span className="text-electric-gradient">AP-PRIME</span><br />
@@ -235,8 +235,8 @@ export default function Home() {
                   <span className="text-purple-400">REAL ESTATE</span>
                 </h1>
                 <p className="text-xl text-gray-400 font-mono max-w-lg">
-                  Advanced AI-powered property intelligence system for the Greater Toronto Area. 
-                  Neural network-enhanced market analysis at your command.
+                  Advanced AI-powered property search system for the Greater Toronto Area. 
+                  Smart market analysis and personalized recommendations at your command.
                 </p>
               </div>
               
@@ -261,20 +261,20 @@ export default function Home() {
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-cyan-400">24/7</div>
-                  <div className="text-sm text-gray-500 font-mono">NEURAL UPTIME</div>
+                  <div className="text-sm text-gray-500 font-mono">SYSTEM UPTIME</div>
                 </div>
               </div>
             </div>
 
-            {/* Right Side - Neural Interface */}
+            {/* Right Side - AI Assistant Interface */}
             <div className="space-y-8 animate-slideInRight">
-              {/* Neural Interface Container */}
+              {/* AI Assistant Container */}
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 to-purple-500/20 rounded-lg blur-xl"></div>
                 <div className="relative bg-black/50 border border-gray-800 rounded-lg p-6 backdrop-blur-sm">
                   <div className="text-center mb-4">
                     <div className="text-cyan-400 font-mono text-sm mb-2">
-                      NEURAL INTERFACE STATUS: <span className="text-green-400">ONLINE</span>
+                      PROPERTY ASSISTANT STATUS: <span className="text-green-400">ONLINE</span>
                     </div>
                     <div className="flex justify-center space-x-1 mb-4">
                       <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
@@ -296,7 +296,7 @@ export default function Home() {
                       <iframe
                         ref={iframeRef}
                         src="https://labs.heygen.com/guest/streaming-embed?share=eyJxdWFsaXR5IjoiaGlnaCIsImF2YXRhck5hbWUiOiJQZWRyb19DaGFpcl9TaXR0aW5nX3B1YmxpYyIsInByZXZpZXdJbWciOiJodHRwczovL2ZpbGVzMi5oZXlnZW4uYWkvYXZhdGFyL3YzLzkyZGU3OWU1MzNhODQyMWJiODZkYTYzYTBlNWViMTJmXzU3MDEwL3ByZXZpZXdfdGFyZ2V0LndlYnAiLCJuZWVkUmVtb3ZlQmFja2dyb3VuZCI6ZmFsc2UsImtub3dsZWRnZUJhc2VJZCI6IjAzNzIwN2YyNDc2NzQ0MGY5ZmQ0YjI3MTNmZDQzMmZiIiwidXNlcm5hbWUiOiJiYTA5Yjc4ZDg0NDM0YWExYjBjOWE0ZGE0MmJlOWJlYSJ9&inIFrame=1&autoplay=1"
-                        title="AP-Prime Neural Interface"
+                        title="AP-Prime AI Assistant"
                         className="w-full h-full cursor-pointer"
                         allow="microphone; autoplay; camera"
                         sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-presentation"
@@ -307,7 +307,7 @@ export default function Home() {
                   {/* Chat Interface */}
                   <div className="space-y-4">
                     <div className="text-cyan-400 font-mono text-xs text-center">
-                      NEURAL COMMUNICATION CHANNEL
+                      PROPERTY CONSULTATION CHANNEL
                     </div>
                     
                     {/* Messages Display */}
@@ -338,7 +338,7 @@ export default function Home() {
                           <div className="bg-gray-800/70 px-4 py-3 rounded-lg border border-gray-700/50 relative">
                             <div className="text-cyan-400 text-xs font-mono mb-1">AP-PRIME</div>
                             <div className="flex items-center space-x-2">
-                              <div className="text-sm text-gray-400">Processing neural pathways</div>
+                              <div className="text-sm text-gray-400">Analyzing your request</div>
                               <div className="flex space-x-1">
                                 <div className="w-1 h-1 bg-cyan-400 rounded-full animate-pulse"></div>
                                 <div className="w-1 h-1 bg-cyan-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
@@ -358,7 +358,7 @@ export default function Home() {
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        placeholder="Enter neural command..."
+                        placeholder="Ask about properties..."
                         disabled={false}
                       />
                       <button
@@ -366,7 +366,7 @@ export default function Home() {
                         onClick={sendMessage}
                         disabled={loading || !input.trim()}
                       >
-                        TRANSMIT
+                        SEND
                       </button>
                     </div>
                   </div>
@@ -384,7 +384,7 @@ export default function Home() {
             <h2 className="text-4xl font-bold mb-4 font-mono">
               PROPERTY <span className="text-electric-gradient">DATABASE</span>
             </h2>
-            <p className="text-gray-500 font-mono text-sm">ACCESSING NEURAL NETWORK DATA • {filteredListings.length} PROPERTIES FOUND</p>
+            <p className="text-gray-500 font-mono text-sm">ACCESSING PROPERTY DATABASE • {filteredListings.length} PROPERTIES FOUND</p>
           </div>
 
           {/* Enhanced Filters and Search */}
