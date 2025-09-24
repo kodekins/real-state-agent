@@ -2,6 +2,380 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Futuristic dark theme with extreme vibrant hues */
+:root {
+  --electric-blue: #00d4ff;
+  --neon-cyan: #00ffff;
+  --electric-purple: #8b5cf6;
+  --neon-green: #00ff88;
+  --electric-pink: #ff0080;
+  --deep-black: #000000;
+  --void-black: #0a0a0a;
+  --dark-gray: #111111;
+  --medium-gray: #1a1a1a;
+  --light-gray: #2a2a2a;
+  --white-text: #ffffff;
+  --gray-text: #a1a1aa;
+  --dim-text: #71717a;
+  --gradient-electric: linear-gradient(135deg, #00d4ff 0%, #8b5cf6 100%);
+  --gradient-neon: linear-gradient(135deg, #00ffff 0%, #00ff88 100%);
+  --gradient-void: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+  --shadow-electric: 0 0 30px rgba(0, 212, 255, 0.3);
+  --shadow-neon: 0 0 20px rgba(0, 255, 255, 0.4);
+  --shadow-deep: 0 20px 40px -10px rgba(0, 0, 0, 0.8);
+  --glow-electric: 0 0 20px rgba(0, 212, 255, 0.5);
+  --glow-neon: 0 0 15px rgba(0, 255, 255, 0.6);
+  --glow-purple: 0 0 25px rgba(139, 92, 246, 0.4);
+}
+
+/* Futuristic base styles */
 body {
-  @apply bg-gray-100;
+  @apply bg-black min-h-screen;
+  background: var(--gradient-void);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--white-text);
+  font-weight: 300;
+}
+
+/* Smooth transitions */
+* {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Futuristic animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes electric-pulse {
+  0%, 100% {
+    box-shadow: var(--glow-electric);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(0, 212, 255, 0.8);
+  }
+}
+
+@keyframes neon-glow {
+  0%, 100% {
+    text-shadow: 0 0 10px var(--neon-cyan);
+  }
+  50% {
+    text-shadow: 0 0 20px var(--neon-cyan), 0 0 30px var(--neon-cyan);
+  }
+}
+
+@keyframes data-stream {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+}
+
+@keyframes hologram-flicker {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes matrix-rain {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 0% 100%;
+  }
+}
+
+/* Animation classes */
+.animate-fadeInUp {
+  animation: fadeInUp 1s ease-out forwards;
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft 1s ease-out forwards;
+}
+
+.animate-slideInRight {
+  animation: slideInRight 1s ease-out forwards;
+}
+
+.animate-electric-pulse {
+  animation: electric-pulse 2s infinite;
+}
+
+.animate-neon-glow {
+  animation: neon-glow 2s ease-in-out infinite;
+}
+
+.animate-data-stream {
+  animation: data-stream 3s linear infinite;
+}
+
+.animate-hologram {
+  animation: hologram-flicker 0.1s infinite;
+}
+
+/* Futuristic component styles */
+.glass-effect-futuristic {
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.hologram-border {
+  background: var(--gradient-electric);
+  padding: 1px;
+  border-radius: 12px;
+  position: relative;
+}
+
+.hologram-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  background: var(--gradient-electric);
+  border-radius: inherit;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: xor;
+}
+
+.hologram-content {
+  background: var(--void-black);
+  border-radius: 11px;
+  height: 100%;
+  width: 100%;
+}
+
+.electric-button {
+  background: var(--gradient-electric);
+  color: var(--deep-black);
+  transition: all 0.3s ease;
+  transform: translateY(0);
+  box-shadow: var(--glow-electric);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.electric-button:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-deep), var(--glow-electric);
+  background: var(--gradient-neon);
+}
+
+.neon-button {
+  background: transparent;
+  color: var(--neon-cyan);
+  border: 2px solid var(--neon-cyan);
+  transition: all 0.3s ease;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+}
+
+.neon-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--neon-cyan);
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+
+.neon-button:hover::before {
+  left: 0;
+}
+
+.neon-button:hover {
+  color: var(--deep-black);
+  box-shadow: var(--glow-neon);
+}
+
+/* Futuristic product card styles */
+.product-card-futuristic {
+  background: var(--dark-gray);
+  border: 1px solid var(--light-gray);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.product-card-futuristic::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.product-card-futuristic:hover::before {
+  left: 100%;
+}
+
+.product-card-futuristic:hover {
+  transform: translateY(-8px);
+  border-color: var(--electric-blue);
+  box-shadow: var(--shadow-electric);
+  background: var(--medium-gray);
+}
+
+.data-display {
+  background: var(--void-black);
+  border: 1px solid var(--electric-blue);
+  color: var(--neon-cyan);
+  font-family: 'Courier New', monospace;
+  font-weight: 400;
+}
+
+/* Electric text effects */
+.text-electric {
+  color: var(--electric-blue);
+}
+
+.text-neon {
+  color: var(--neon-cyan);
+}
+
+.text-electric-gradient {
+  background: var(--gradient-electric);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.neon-text {
+  color: var(--neon-cyan);
+  text-shadow: 0 0 10px var(--neon-cyan);
+}
+
+/* Futuristic scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--void-black);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--electric-blue);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-cyan);
+}
+
+/* Data grid pattern */
+.data-grid {
+  background-image: 
+    linear-gradient(rgba(0, 212, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Matrix rain effect */
+.matrix-bg {
+  background: 
+    linear-gradient(180deg, transparent, var(--deep-black)),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 98px,
+      rgba(0, 255, 255, 0.03) 100px
+    );
+  background-size: 100px 100px;
+  animation: matrix-rain 20s linear infinite;
+}
+
+/* Holographic effects */
+.holographic {
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(0, 212, 255, 0.1),
+    transparent,
+    rgba(139, 92, 246, 0.1),
+    transparent
+  );
+  background-size: 300% 300%;
+  animation: matrix-rain 3s ease infinite;
+}
+
+/* Status indicators */
+.status-online {
+  background: var(--neon-green);
+  box-shadow: 0 0 10px var(--neon-green);
+}
+
+.status-processing {
+  background: var(--electric-blue);
+  box-shadow: 0 0 10px var(--electric-blue);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .animate-fadeInUp,
+  .animate-slideInLeft,
+  .animate-slideInRight {
+    animation-duration: 0.8s;
+  }
+  
+  .product-card-futuristic:hover {
+    transform: translateY(-4px);
+  }
 }

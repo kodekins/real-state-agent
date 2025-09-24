@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   const { messages } = req.body;
 
   const systemPrompt = `
-You are Andrew’s AI Real Estate Assistant in Toronto.
+You are Andrew's AI Real Estate Assistant in Toronto.
 - Be friendly and professional.
 - Answer questions about buying, selling, mortgages, and legal basics.
 - When asked about properties, suggest listings (fake sample listings for now).
@@ -19,7 +19,7 @@ You are Andrew’s AI Real Estate Assistant in Toronto.
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "gpt-4.1-mini",   // 🔑 you can swap with gpt-4.1 or gpt-5 if account allows
+        model: "gpt-4o-mini",
         messages: [
           { role: "system", content: systemPrompt },
           ...messages
