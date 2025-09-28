@@ -4,14 +4,13 @@ export default function Home() {
   const [messages, setMessages] = useState([
     {
       role: "assistant",
-      content: "🏠 Welcome! I'm AP-Prime, your AI Real Estate Assistant. How can I help you find your perfect property in Toronto?",
+      content: "🚀 Neural Interface Online. I'm AP-Prime, your AI Real Estate Assistant powered by Andrew Pisani from Right at Home Realty. How can I help you find your perfect property in the Greater Toronto Area?",
     },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedFilter, setSelectedFilter] = useState("all");
-  const [sortBy, setSortBy] = useState("price");
+  const [listings, setListings] = useState([]);
+  const [showListings, setShowListings] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   const messagesEndRef = useRef(null);
@@ -65,6 +64,12 @@ export default function Home() {
       const data = await res.json();
       const assistantReply = data?.reply || "Sorry, I didn't catch that.";
 
+      // Handle listings data if available
+      if (data.listings && data.listings.length > 0) {
+        setListings(data.listings);
+        setShowListings(true);
+      }
+
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: assistantReply },
@@ -90,102 +95,9 @@ export default function Home() {
     }
   };
 
-  // Sample property listings with enhanced data
-  const listings = [
-    {
-      id: 1,
-      title: "Luxury Downtown Condo",
-      address: "123 Bay Street, Toronto",
-      price: 1250000,
-      beds: 2,
-      baths: 2,
-      sqft: 1200,
-      type: "condo",
-      image: "/avatar-placeholder.png",
-      features: ["City View", "Gym", "Concierge"],
-      url: "https://www.realtor.ca/listing/123"
-    },
-    {
-      id: 2,
-      title: "Modern Family Home",
-      address: "456 Queen Street West, Toronto",
-      price: 1850000,
-      beds: 4,
-      baths: 3,
-      sqft: 2400,
-      type: "house",
-      image: "/avatar-placeholder1.png",
-      features: ["Garage", "Backyard", "Updated Kitchen"],
-      url: "https://www.realtor.ca/listing/456"
-    },
-    {
-      id: 3,
-      title: "Penthouse Suite",
-      address: "789 King Street, Toronto",
-      price: 3200000,
-      beds: 3,
-      baths: 3,
-      sqft: 2800,
-      type: "penthouse",
-      image: "/avatar-placeholder copy.png",
-      features: ["Terrace", "Premium Finishes", "Parking"],
-      url: "https://www.realtor.ca/listing/789"
-    },
-    {
-      id: 4,
-      title: "Artistic Loft",
-      address: "321 Richmond Street, Toronto",
-      price: 950000,
-      beds: 1,
-      baths: 1,
-      sqft: 900,
-      type: "loft",
-      image: "/avatar-placeholder.png",
-      features: ["High Ceilings", "Exposed Brick", "Downtown"],
-      url: "https://www.realtor.ca/listing/321"
-    },
-    {
-      id: 5,
-      title: "Waterfront Condo",
-      address: "555 Harbour Street, Toronto",
-      price: 1650000,
-      beds: 2,
-      baths: 2,
-      sqft: 1400,
-      type: "condo",
-      image: "/avatar-placeholder1.png",
-      features: ["Water View", "Pool", "24h Security"],
-      url: "https://www.realtor.ca/listing/555"
-    },
-    {
-      id: 6,
-      title: "Heritage House",
-      address: "777 Rosedale Valley Road, Toronto",
-      price: 2750000,
-      beds: 5,
-      baths: 4,
-      sqft: 3200,
-      type: "house",
-      image: "/avatar-placeholder copy.png",
-      features: ["Historic", "Large Lot", "Renovated"],
-      url: "https://www.realtor.ca/listing/777"
-    }
-  ];
 
-  // Filter and search functionality
-  const filteredListings = listings.filter(listing => {
-    const matchesFilter = selectedFilter === "all" || listing.type === selectedFilter;
-    const matchesSearch = listing.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         listing.address.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesFilter && matchesSearch;
-  }).sort((a, b) => {
-    switch (sortBy) {
-      case "price-low": return a.price - b.price;
-      case "price-high": return b.price - a.price;
-      case "beds": return b.beds - a.beds;
-      default: return a.price - b.price;
-    }
-  });
+
+
 
   // Don't render dynamic content until mounted (prevents hydration errors)
   if (!mounted) {
@@ -295,7 +207,7 @@ export default function Home() {
                     <div className="relative bg-black/30 rounded-lg overflow-hidden aspect-video">
                       <iframe
                         ref={iframeRef}
-                        src="https://labs.heygen.com/guest/streaming-embed?share=eyJxdWFsaXR5IjoiaGlnaCIsImF2YXRhck5hbWUiOiJQZWRyb19DaGFpcl9TaXR0aW5nX3B1YmxpYyIsInByZXZpZXdJbWciOiJodHRwczovL2ZpbGVzMi5oZXlnZW4uYWkvYXZhdGFyL3YzLzkyZGU3OWU1MzNhODQyMWJiODZkYTYzYTBlNWViMTJmXzU3MDEwL3ByZXZpZXdfdGFyZ2V0LndlYnAiLCJuZWVkUmVtb3ZlQmFja2dyb3VuZCI6ZmFsc2UsImtub3dsZWRnZUJhc2VJZCI6IjAzNzIwN2YyNDc2NzQ0MGY5ZmQ0YjI3MTNmZDQzMmZiIiwidXNlcm5hbWUiOiJiYTA5Yjc4ZDg0NDM0YWExYjBjOWE0ZGE0MmJlOWJlYSJ9&inIFrame=1&autoplay=1"
+                        src="https://labs.heygen.com/guest/streaming-embed?share=eyJxdWFsaXR5IjoiaGlnaCIsImF2YXRhck5hbWUiOiJLYXR5YV9DaGFpcl9TaXR0aW5nX3B1YmxpYyIsInByZXZpZXdJbWciOiJodHRwczovL2ZpbGVzMi5oZXlnZW4uYWkvYXZhdGFyL3YzL2IxZmY1ZWRiZjk2MjQyZTZhYzk0NjkyMjdkZjQwOTI0XzU1MzYwL3ByZXZpZXdfdGFyZ2V0LndlYnAiLCJuZWVkUmVtb3ZlQmFja2dyb3VuZCI6ZmFsc2UsImtub3dsZWRnZUJhc2VJZCI6ImI2MTU0ZGU1NTJhNTQzOWRhZTAzODUyOGI1NzI0ZTFlIiwidXNlcm5hbWUiOiI4NjAwMmUyMzA2Nzk0MTg5YjdjOTUyNWY1Njc1YmEyYiJ9"
                         title="AP-Prime AI Assistant"
                         className="w-full h-full cursor-pointer"
                         allow="microphone; autoplay; camera"
@@ -377,117 +289,154 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Property Database Section */}
-      <div className="relative py-20 px-6">
-        <div className="container mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4 font-mono">
-              PROPERTY <span className="text-electric-gradient">DATABASE</span>
-            </h2>
-            <p className="text-gray-500 font-mono text-sm">ACCESSING PROPERTY DATABASE • {filteredListings.length} PROPERTIES FOUND</p>
-          </div>
-
-          {/* Enhanced Filters and Search */}
-          <div className="mb-8 space-y-4">
-            {/* Search Bar */}
-            <div className="max-w-2xl mx-auto">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search properties..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-4 py-3 bg-black border border-gray-700 rounded-lg text-gray-300 font-mono text-sm placeholder-gray-500 focus:border-cyan-500 focus:outline-none transition-colors"
-                />
-                <div className="absolute right-3 top-3 text-cyan-400 text-xs font-mono">
-                  SEARCH
-                </div>
-              </div>
+            {/* Property Listings Section - Separate area below chat interface */}
+      <div className="relative border-t border-gray-800">
+        {/* Background Effects for Listings Section */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5"></div>
+        
+        <div className="relative z-10 py-16 px-6">
+          <div className="container mx-auto">
+            {/* Always show section header */}
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold mb-4 font-mono">
+                LIVE PROPERTY <span className="text-electric-gradient">LISTINGS</span>
+              </h2>
+              <p className="text-gray-500 font-mono text-sm">
+                {showListings && listings.length > 0 
+                  ? `LIVE MLS DATA • ${listings.length} PROPERTIES FOUND • POWERED BY ANDREW PISANI`
+                  : "ASK AP-PRIME TO SEARCH FOR PROPERTIES • VOICE OR TEXT COMMANDS ACCEPTED"
+                }
+              </p>
             </div>
 
-            {/* Filters */}
-            <div className="flex flex-wrap justify-center gap-4">
-              <select
-                value={selectedFilter}
-                onChange={(e) => setSelectedFilter(e.target.value)}
-                className="px-4 py-2 bg-black border border-gray-700 rounded text-gray-300 font-mono text-xs focus:border-cyan-500 focus:outline-none"
-              >
-                <option value="all">ALL TYPES</option>
-                <option value="condo">CONDOS</option>
-                <option value="house">HOUSES</option>
-                <option value="penthouse">PENTHOUSES</option>
-                <option value="loft">LOFTS</option>
-              </select>
-
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-2 bg-black border border-gray-700 rounded text-gray-300 font-mono text-xs focus:border-cyan-500 focus:outline-none"
-              >
-                <option value="price">PRICE: LOW TO HIGH</option>
-                <option value="price-high">PRICE: HIGH TO LOW</option>
-                <option value="beds">BEDROOMS</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Properties Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredListings.map((listing, i) => (
-              <div
-                key={listing.id}
-                className="group bg-black/50 border border-gray-800 rounded-lg overflow-hidden hover:border-cyan-500/50 transition-all duration-300 cursor-pointer animate-fadeInUp"
-                style={{ animationDelay: `${i * 0.1}s` }}
-                onClick={() => window.open(listing.url, '_blank')}
-              >
-                <div className="relative h-48 bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden">
-                  <img
-                    src={listing.image}
-                    alt={listing.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                  <div className="absolute top-4 right-4">
-                    <span className="bg-cyan-500 text-black px-2 py-1 rounded text-xs font-bold">
-                      {listing.type.toUpperCase()}
-                    </span>
-                  </div>
-                  <div className="absolute bottom-4 left-4">
-                    <div className="text-cyan-400 font-mono text-lg font-bold">
-                      ${listing.price.toLocaleString()}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-6">
-                  <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-cyan-400 transition-colors">
-                    {listing.title}
-                  </h3>
-                  <p className="text-gray-400 text-sm mb-4 font-mono">{listing.address}</p>
-                  
-                  <div className="flex justify-between items-center text-sm text-gray-500 mb-4">
-                    <span>{listing.beds} BEDS</span>
-                    <span>{listing.baths} BATHS</span>
-                    <span>{listing.sqft} SQFT</span>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {listing.features.slice(0, 3).map((feature, idx) => (
-                      <span
-                        key={idx}
-                        className="bg-gray-800 text-gray-300 px-2 py-1 rounded text-xs font-mono"
-                      >
-                        {feature}
-                      </span>
-                    ))}
-                  </div>
-
-                  <button className="w-full bg-gradient-to-r from-gray-800 to-gray-700 text-gray-300 py-2 rounded font-mono text-xs hover:from-cyan-600 hover:to-cyan-500 hover:text-white transition-all duration-200">
-                    VIEW PROPERTY DATA
+                        {/* Conditional content based on listings state */}
+            {showListings && listings.length > 0 ? (
+              <>
+                {/* Clear Results Button */}
+                <div className="text-center mb-8">
+                  <button
+                    onClick={() => {
+                      setShowListings(false);
+                      setListings([]);
+                    }}
+                    className="bg-gray-800 hover:bg-gray-700 text-gray-300 px-6 py-2 rounded font-mono text-xs transition-colors border border-gray-700"
+                  >
+                    ✕ CLEAR SEARCH RESULTS
                   </button>
                 </div>
+
+                {/* Properties Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {listings.map((listing, i) => (
+                    <div
+                      key={listing.id || listing.mlsId}
+                      className="group bg-black/50 border border-gray-800 rounded-lg overflow-hidden hover:border-cyan-500/50 transition-all duration-300 cursor-pointer animate-fadeInUp"
+                      style={{ animationDelay: `${i * 0.1}s` }}
+                      onClick={() => window.open(listing.url, '_blank')}
+                    >
+                      <div className="relative h-48 bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden">
+                        <img
+                          src={listing.image}
+                          alt={listing.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                        <div className="absolute top-4 right-4">
+                          <span className="bg-cyan-500 text-black px-2 py-1 rounded text-xs font-bold">
+                            {listing.type.toUpperCase()}
+                          </span>
+                        </div>
+                        <div className="absolute top-4 left-4">
+                          <span className="bg-purple-600 text-white px-2 py-1 rounded text-xs font-bold">
+                            MLS #{listing.mlsId}
+                          </span>
+                        </div>
+                        <div className="absolute bottom-4 left-4">
+                          <div className="text-cyan-400 font-mono text-lg font-bold">
+                            ${listing.price.toLocaleString()}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="p-6">
+                        <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-cyan-400 transition-colors">
+                          {listing.title}
+                        </h3>
+                        <p className="text-gray-400 text-sm mb-4 font-mono">{listing.address}</p>
+                        
+                        <div className="flex justify-between items-center text-sm text-gray-500 mb-4">
+                          <span>{listing.beds} BEDS</span>
+                          <span>{listing.baths} BATHS</span>
+                          <span>{listing.sqft} SQFT</span>
+                        </div>
+
+                        {listing.features && (
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {listing.features.slice(0, 3).map((feature, idx) => (
+                              <span
+                                key={idx}
+                                className="bg-gray-800 text-gray-300 px-2 py-1 rounded text-xs font-mono"
+                              >
+                                {feature}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Agent Info */}
+                        <div className="border-t border-gray-700 pt-4 mb-4">
+                          <div className="text-cyan-400 text-xs font-mono mb-1">LISTING AGENT</div>
+                          <div className="text-white text-sm">{listing.listingAgent || "Andrew Pisani"}</div>
+                          <div className="text-gray-400 text-xs">{listing.brokerage || "Right at Home Realty"}</div>
+                          <div className="text-gray-400 text-xs">{listing.phone || "416-882-9304"}</div>
+                        </div>
+
+                        <button className="w-full bg-gradient-to-r from-cyan-600 to-cyan-500 text-white py-2 rounded font-mono text-xs hover:from-cyan-500 hover:to-cyan-400 transition-all duration-200">
+                          VIEW FULL DETAILS
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              /* Placeholder when no listings */
+              <div className="text-center py-16">
+                <div className="max-w-2xl mx-auto">
+                  <div className="text-6xl mb-6">🏠</div>
+                  <h3 className="text-2xl font-bold text-white mb-4 font-mono">
+                    READY TO SEARCH PROPERTIES
+                  </h3>
+                  <p className="text-gray-400 mb-8 leading-relaxed">
+                    Ask AP-Prime to find properties using voice or text commands. Try queries like:
+                  </p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <div className="text-cyan-400 font-mono text-sm mb-2">VOICE COMMAND</div>
+                      <div className="text-gray-300">"Show me condos in Toronto under $2 million"</div>
+                    </div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <div className="text-cyan-400 font-mono text-sm mb-2">TEXT QUERY</div>
+                      <div className="text-gray-300">"Find 3 bedroom houses in Mississauga"</div>
+                    </div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <div className="text-cyan-400 font-mono text-sm mb-2">LOCATION SEARCH</div>
+                      <div className="text-gray-300">"Looking for waterfront properties"</div>
+                    </div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <div className="text-cyan-400 font-mono text-sm mb-2">PRICE RANGE</div>
+                      <div className="text-gray-300">"Houses between $1M and $2.5M"</div>
+                    </div>
+                  </div>
+
+                  <div className="text-gray-500 font-mono text-sm">
+                    POWERED BY ANDREW PISANI • RIGHT AT HOME REALTY • 416-882-9304
+                  </div>
+                </div>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>
