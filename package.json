@@ -8,10 +8,12 @@
     "start": "next start"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "axios": "^1.12.2",
+    "cheerio": "^1.1.2",
     "next": "14.2.3",
     "react": "18.3.1",
-    "react-dom": "18.3.1",
-    "@google/generative-ai": "^0.21.0"
+    "react-dom": "18.3.1"
   },
   "devDependencies": {
     "@netlify/plugin-nextjs": "^5.13.3",

@@ -65,9 +65,57 @@ export default function Home() {
       const assistantReply = data?.reply || "Sorry, I didn't catch that.";
 
       // Handle listings data if available
+      console.log('Chat response data:', {
+        hasListings: !!data.listings,
+        listingsLength: data.listings?.length || 0,
+        searchDetected: data.searchDetected,
+        listingsData: data.listings
+      });
+      
       if (data.listings && data.listings.length > 0) {
+        console.log('Setting listings:', data.listings);
+        
+        // Set listings first
         setListings(data.listings);
-        setShowListings(true);
+        
+        // Then force show listings
+        setTimeout(() => {
+          setShowListings(true);
+          console.log(`Displaying ${data.listings.length} listings from ${data.searchDetected ? 'live search' : 'chat'}`);
+          
+          // Force scroll to listings section after another short delay
+          setTimeout(() => {
+            const listingsSection = document.getElementById('listings-section');
+            if (listingsSection) {
+              listingsSection.scrollIntoView({ behavior: 'smooth' });
+            }
+          }, 300);
+        }, 100);
+      } else if (data.searchDetected) {
+        // If property search was detected but no listings returned, fetch fallback listings
+        console.log('Property search detected but no listings returned, fetching fallback');
+        
+        // Fetch fallback listings directly from the API
+        fetch('/api/listings')
+          .then(res => res.json())
+          .then(fallbackData => {
+            if (fallbackData.listings && fallbackData.listings.length > 0) {
+              console.log('Using fallback listings:', fallbackData.listings);
+              setListings(fallbackData.listings);
+              setShowListings(true);
+              
+              setTimeout(() => {
+                const listingsSection = document.getElementById('listings-section');
+                if (listingsSection) {
+                  listingsSection.scrollIntoView({ behavior: 'smooth' });
+                }
+              }, 300);
+            }
+          })
+          .catch(err => {
+            console.log('Could not fetch fallback listings:', err);
+            setShowListings(false);
+          });
       }
 
       setMessages((prev) => [
@@ -290,7 +338,7 @@ export default function Home() {
       </div>
 
             {/* Property Listings Section - Separate area below chat interface */}
-      <div className="relative border-t border-gray-800">
+      <div id="listings-section" className="relative border-t border-gray-800">
         {/* Background Effects for Listings Section */}
         <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black"></div>
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5"></div>
@@ -308,6 +356,10 @@ export default function Home() {
                   : "ASK AP-PRIME TO SEARCH FOR PROPERTIES • VOICE OR TEXT COMMANDS ACCEPTED"
                 }
               </p>
+              {/* Debug info - remove in production */}
+              <div className="text-xs text-gray-600 mt-2">
+                Debug: showListings={showListings.toString()}, listings.length={listings.length}
+              </div>
             </div>
 
                         {/* Conditional content based on listings state */}
