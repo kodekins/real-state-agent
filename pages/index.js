@@ -11,7 +11,10 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [listings, setListings] = useState([]);
   const [showListings, setShowListings] = useState(false);
+  const [searchPerformed, setSearchPerformed] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [selectedListing, setSelectedListing] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const messagesEndRef = useRef(null);
   const iframeRef = useRef(null);
@@ -71,6 +74,10 @@ export default function Home() {
         searchDetected: data.searchDetected,
         listingsData: data.listings
       });
+      
+      if (data.searchDetected) {
+        setSearchPerformed(true); // Mark that a search was performed
+      }
       
       if (data.listings && data.listings.length > 0) {
         console.log('Setting listings:', data.listings);
@@ -140,6 +147,34 @@ export default function Home() {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
+    }
+  };
+
+  const openListingModal = (listing) => {
+    setSelectedListing(listing);
+    setCurrentImageIndex(0);
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+  };
+
+  const closeListingModal = () => {
+    setSelectedListing(null);
+    setCurrentImageIndex(0);
+    document.body.style.overflow = 'unset';
+  };
+
+  const nextImage = () => {
+    if (selectedListing?.images?.length > 0) {
+      setCurrentImageIndex((prev) => 
+        prev === selectedListing.images.length - 1 ? 0 : prev + 1
+      );
+    }
+  };
+
+  const prevImage = () => {
+    if (selectedListing?.images?.length > 0) {
+      setCurrentImageIndex((prev) => 
+        prev === 0 ? selectedListing.images.length - 1 : prev - 1
+      );
     }
   };
 
@@ -353,17 +388,16 @@ export default function Home() {
               <p className="text-gray-500 font-mono text-sm">
                 {showListings && listings.length > 0 
                   ? `LIVE MLS DATA • ${listings.length} PROPERTIES FOUND • POWERED BY ANDREW PISANI`
+                  : searchPerformed && listings.length === 0
+                  ? "NO PROPERTIES MATCH YOUR CRITERIA • TRY DIFFERENT SEARCH TERMS"
                   : "ASK AP-PRIME TO SEARCH FOR PROPERTIES • VOICE OR TEXT COMMANDS ACCEPTED"
                 }
               </p>
-              {/* Debug info - remove in production */}
-              <div className="text-xs text-gray-600 mt-2">
-                Debug: showListings={showListings.toString()}, listings.length={listings.length}
-              </div>
             </div>
 
                         {/* Conditional content based on listings state */}
             {showListings && listings.length > 0 ? (
+              /* Show listings grid */
               <>
                 {/* Clear Results Button */}
                 <div className="text-center mb-8">
@@ -385,7 +419,7 @@ export default function Home() {
                       key={listing.id || listing.mlsId}
                       className="group bg-black/50 border border-gray-800 rounded-lg overflow-hidden hover:border-cyan-500/50 transition-all duration-300 cursor-pointer animate-fadeInUp"
                       style={{ animationDelay: `${i * 0.1}s` }}
-                      onClick={() => window.open(listing.url, '_blank')}
+                      onClick={() => openListingModal(listing)}
                     >
                       <div className="relative h-48 bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden">
                         <img
@@ -444,7 +478,13 @@ export default function Home() {
                           <div className="text-gray-400 text-xs">{listing.phone || "416-882-9304"}</div>
                         </div>
 
-                        <button className="w-full bg-gradient-to-r from-cyan-600 to-cyan-500 text-white py-2 rounded font-mono text-xs hover:from-cyan-500 hover:to-cyan-400 transition-all duration-200">
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openListingModal(listing);
+                          }}
+                          className="w-full bg-gradient-to-r from-cyan-600 to-cyan-500 text-white py-2 rounded font-mono text-xs hover:from-cyan-500 hover:to-cyan-400 transition-all duration-200"
+                        >
                           VIEW FULL DETAILS
                         </button>
                       </div>
@@ -452,8 +492,55 @@ export default function Home() {
                   ))}
                 </div>
               </>
+            ) : searchPerformed && listings.length === 0 ? (
+              /* No results found after search */
+              <div className="text-center py-16">
+                <div className="max-w-2xl mx-auto">
+                  <div className="text-6xl mb-6">🔍</div>
+                  <h3 className="text-2xl font-bold text-white mb-4 font-mono">
+                    NO PROPERTIES FOUND
+                  </h3>
+                  <p className="text-gray-400 mb-8 leading-relaxed">
+                    No properties match your current search criteria. Try adjusting your filters or search terms.
+                  </p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <div className="text-cyan-400 font-mono text-sm mb-2">TRY DIFFERENT LOCATION</div>
+                      <div className="text-gray-300">"Show me properties in Mississauga"</div>
+                    </div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <div className="text-cyan-400 font-mono text-sm mb-2">ADJUST PRICE RANGE</div>
+                      <div className="text-gray-300">"Find homes under $1.5 million"</div>
+                    </div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <div className="text-cyan-400 font-mono text-sm mb-2">CHANGE PROPERTY TYPE</div>
+                      <div className="text-gray-300">"Show me townhouses instead"</div>
+                    </div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <div className="text-cyan-400 font-mono text-sm mb-2">BROADEN SEARCH</div>
+                      <div className="text-gray-300">"Find any properties in GTA"</div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setSearchPerformed(false);
+                      setListings([]);
+                      setShowListings(false);
+                    }}
+                    className="bg-gradient-to-r from-cyan-600 to-cyan-500 text-white px-8 py-3 rounded font-mono text-sm hover:from-cyan-500 hover:to-cyan-400 transition-all duration-200"
+                  >
+                    NEW SEARCH
+                  </button>
+
+                  <div className="text-gray-500 font-mono text-sm mt-8">
+                    OR CALL ANDREW PISANI DIRECTLY: 416-882-9304
+                  </div>
+                </div>
+              </div>
             ) : (
-              /* Placeholder when no listings */
+              /* Initial state - ready to search */
               <div className="text-center py-16">
                 <div className="max-w-2xl mx-auto">
                   <div className="text-6xl mb-6">🏠</div>
@@ -492,6 +579,190 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Listing Detail Modal */}
+      {selectedListing && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm animate-fadeIn"
+          onClick={closeListingModal}
+        >
+          <div 
+            className="relative bg-gradient-to-br from-gray-900 to-black border border-cyan-500/30 rounded-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-slideInUp"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              onClick={closeListingModal}
+              className="absolute top-4 right-4 z-10 bg-black/80 hover:bg-red-600 text-white rounded-full p-2 w-10 h-10 flex items-center justify-center transition-colors border border-gray-700"
+            >
+              ✕
+            </button>
+
+            {/* Image Gallery Section */}
+            <div className="relative h-96 bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden rounded-t-2xl">
+              <img
+                src={selectedListing.images?.[currentImageIndex] || selectedListing.image}
+                alt={selectedListing.title}
+                className="w-full h-full object-cover"
+              />
+              
+              {/* MLS Badge */}
+              <div className="absolute top-4 left-4">
+                <span className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg">
+                  MLS #{selectedListing.mlsId}
+                </span>
+              </div>
+
+              {/* Property Type Badge */}
+              <div className="absolute top-4 right-20">
+                <span className="bg-cyan-500 text-black px-4 py-2 rounded-lg text-sm font-bold shadow-lg">
+                  {selectedListing.type.toUpperCase()}
+                </span>
+              </div>
+
+              {/* Image Navigation */}
+              {selectedListing.images?.length > 1 && (
+                <>
+                  <button
+                    onClick={prevImage}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/80 hover:bg-cyan-600 text-white rounded-full p-3 transition-colors"
+                  >
+                    ←
+                  </button>
+                  <button
+                    onClick={nextImage}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/80 hover:bg-cyan-600 text-white rounded-full p-3 transition-colors"
+                  >
+                    →
+                  </button>
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/80 px-3 py-1 rounded-full text-white text-sm">
+                    {currentImageIndex + 1} / {selectedListing.images.length}
+                  </div>
+                </>
+              )}
+
+              {/* Price Overlay */}
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-6">
+                <div className="text-cyan-400 font-mono text-4xl font-bold">
+                  ${selectedListing.price.toLocaleString()}
+                </div>
+              </div>
+            </div>
+
+            {/* Content Section */}
+            <div className="p-8 space-y-6">
+              {/* Title & Address */}
+              <div>
+                <h2 className="text-3xl font-bold text-white mb-2">{selectedListing.title}</h2>
+                <p className="text-gray-400 text-lg font-mono">{selectedListing.address}</p>
+              </div>
+
+              {/* Property Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 text-center">
+                  <div className="text-cyan-400 text-2xl font-bold">{selectedListing.beds}</div>
+                  <div className="text-gray-400 text-sm font-mono">BEDROOMS</div>
+                </div>
+                <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 text-center">
+                  <div className="text-cyan-400 text-2xl font-bold">{selectedListing.baths}</div>
+                  <div className="text-gray-400 text-sm font-mono">BATHROOMS</div>
+                </div>
+                <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 text-center">
+                  <div className="text-cyan-400 text-2xl font-bold">{selectedListing.sqft.toLocaleString()}</div>
+                  <div className="text-gray-400 text-sm font-mono">SQFT</div>
+                </div>
+                <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 text-center">
+                  <div className="text-cyan-400 text-2xl font-bold">{selectedListing.daysOnMarket || 'N/A'}</div>
+                  <div className="text-gray-400 text-sm font-mono">DAYS ON MARKET</div>
+                </div>
+              </div>
+
+              {/* Features */}
+              {selectedListing.features && selectedListing.features.length > 0 && (
+                <div>
+                  <h3 className="text-cyan-400 font-mono text-sm mb-3">PROPERTY FEATURES</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedListing.features.map((feature, idx) => (
+                      <span
+                        key={idx}
+                        className="bg-gradient-to-r from-gray-800 to-gray-700 text-gray-300 px-4 py-2 rounded-lg text-sm font-mono border border-gray-600"
+                      >
+                        ✓ {feature}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Description */}
+              {selectedListing.description && (
+                <div>
+                  <h3 className="text-cyan-400 font-mono text-sm mb-3">PROPERTY DESCRIPTION</h3>
+                  <p className="text-gray-300 leading-relaxed">{selectedListing.description}</p>
+                </div>
+              )}
+
+              {/* Agent Contact Section */}
+              <div className="bg-gradient-to-r from-gray-800/80 to-gray-900/80 border border-cyan-500/30 rounded-lg p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <div className="text-cyan-400 font-mono text-xs mb-1">LISTING AGENT</div>
+                    <div className="text-white text-2xl font-bold">Andrew Pisani</div>
+                    <div className="text-gray-400 text-sm">{selectedListing.brokerage || "Right at Home Realty, Brokerage"}</div>
+                    <div className="text-cyan-400 font-mono text-lg mt-2">📞 416-882-9304</div>
+                    <div className="text-gray-400 text-sm">🏢 Office: 289-357-3000</div>
+                  </div>
+                  <div className="hidden md:block w-32 h-32 bg-gradient-to-br from-cyan-500 to-purple-600 rounded-full flex items-center justify-center text-white text-5xl font-bold">
+                    AP
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <a
+                    href={selectedListing.contactUrl || `https://api.whatsapp.com/send?phone=14168829304&text=Hi%20Andrew,%20I'm%20interested%20in%20MLS%23${selectedListing.mlsId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white py-3 px-6 rounded-lg font-mono text-sm text-center transition-all duration-200 flex items-center justify-center gap-2"
+                  >
+                    <span>💬</span> CONTACT VIA WHATSAPP
+                  </a>
+                  
+                  <a
+                    href="https://www.andrewpisani.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 text-white py-3 px-6 rounded-lg font-mono text-sm text-center transition-all duration-200 flex items-center justify-center gap-2"
+                  >
+                    <span>🏠</span> MORE LISTINGS
+                  </a>
+                  
+                  <a
+                    href={selectedListing.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white py-3 px-6 rounded-lg font-mono text-sm text-center transition-all duration-200 flex items-center justify-center gap-2"
+                  >
+                    <span>🔗</span> VIEW ON REALTOR.CA
+                  </a>
+                </div>
+              </div>
+
+              {/* Property Details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div className="bg-gray-800/30 border border-gray-700 rounded-lg p-4">
+                  <div className="text-cyan-400 font-mono text-xs mb-2">STATUS</div>
+                  <div className="text-white">{selectedListing.status || 'Active'}</div>
+                </div>
+                <div className="bg-gray-800/30 border border-gray-700 rounded-lg p-4">
+                  <div className="text-cyan-400 font-mono text-xs mb-2">PROPERTY TYPE</div>
+                  <div className="text-white">{selectedListing.propertyType || selectedListing.type}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
