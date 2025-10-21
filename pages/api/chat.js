@@ -257,12 +257,37 @@ You have access to live MLS data through the AMPRE API.
     const response = await result.response;
     const aiReply = response.text();
 
+    // Format response for avatar speech
+    let avatarSpeech = aiReply;
+    
+    // If listings found, create a speech-optimized summary
+    if (listingsData?.listings?.length > 0) {
+      const count = listingsData.listings.length;
+      const topListing = listingsData.listings[0];
+      
+      // Create natural speech summary with direction to look below
+      avatarSpeech = `I found ${count} ${count === 1 ? 'property' : 'properties'} that match your search. `;
+      
+      if (count === 1) {
+        avatarSpeech += `It's a ${topListing.beds}-bedroom ${topListing.type} in ${topListing.address.split(',')[0]} for $${topListing.price.toLocaleString()}. `;
+      } else {
+        avatarSpeech += `The top result is a ${topListing.beds}-bedroom ${topListing.type} in ${topListing.address.split(',')[0]} for $${topListing.price.toLocaleString()}. `;
+      }
+      
+      // Clear direction to look at listings below
+      avatarSpeech += `Please have a look at the ${count === 1 ? 'listing' : 'listings'} below according to your needs. You can click on any property to see full details.`;
+    } else if (listingsData?.listings?.length === 0 && isPropertySearch) {
+      avatarSpeech = `I couldn't find any properties matching those criteria right now. Would you like to try a different search, or I can help you set up alerts for when matching properties become available. You can also call me directly at 4-1-6-8-8-2-9-3-0-4.`;
+    }
+    
     // Return response with listings if available
     res.status(200).json({ 
       reply: aiReply,
+      avatarSpeech: avatarSpeech, // Optimized for speech synthesis
       listings: listingsData?.listings || [],
       hasListings: listingsData?.listings?.length > 0,
       searchDetected: isPropertySearch,
+      listingsCount: listingsData?.listings?.length || 0,
       searchParams: null
     });
 
@@ -271,8 +296,10 @@ You have access to live MLS data through the AMPRE API.
     console.error("Error stack:", err.stack);
     
     // Return helpful error message
+    const errorMessage = "I apologize, I'm having trouble processing your request right now. Please try asking in a different way, or call Andrew Pisani directly at 4-1-6-8-8-2-9-3-0-4 for immediate assistance.";
     res.status(200).json({  // Use 200 to not break frontend
-      reply: "I apologize, I'm having trouble processing your request right now. Please try asking in a different way, or call Andrew Pisani directly at 416-882-9304 for immediate assistance.",
+      reply: errorMessage,
+      avatarSpeech: errorMessage,
       listings: [],
       error: err.message,
       searchDetected: false

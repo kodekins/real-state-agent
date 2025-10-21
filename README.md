@@ -1,24 +1,27 @@
 # Real Estate Avatar - Andrew Pisani
 
-## 🏠 Live Listings Integration
+## 🎭 AI Avatar + Live MLS Integration
 
-This AI-powered real estate assistant now features **live listings integration** directly from Andrew Pisani's website at **andrewpisani.com**.
+This AI-powered real estate assistant features a **HeyGen AI Avatar** that speaks responses and connects to **live MLS data** through the AMPRE API. Andrew Pisani's virtual assistant provides real-time property information with voice interaction.
 
 ### ✨ Features
 
-- **Live Data Scraping**: Real-time property listings from andrewpisani.com
-- **Smart Search**: AI detects property queries and fetches relevant listings
-- **Beautiful Display**: Modern property cards with images, details, and contact info
-- **Fallback System**: Quality sample listings if live data is temporarily unavailable
-- **Multiple Sources**: Integrates with Right at Home Realty and other sources
+- **🎭 HeyGen AI Avatar**: Interactive avatar that speaks responses in real-time
+- **🏠 Live MLS Data**: Real-time property listings from AMPRE API (TREB MLS)
+- **🤖 Smart AI**: Gemini-powered conversation with property search intelligence
+- **🗣️ Voice Responses**: Avatar speaks all responses with natural language
+- **📋 Dynamic Listings**: Beautiful property cards with images and full details
+- **🔍 Advanced Search**: Filter by price, location, bedrooms, bathrooms, property type
+- **📱 Mobile Ready**: Responsive design for all devices
 
 ### 🚀 How It Works
 
-1. **User Query**: Ask about properties (e.g., "Show me condos in Toronto under $2M")
-2. **AI Detection**: System detects property-related queries automatically
-3. **Live Scraping**: Fetches current listings from Andrew's website
-4. **Smart Response**: AI provides personalized property recommendations
-5. **Visual Display**: Beautiful property cards appear in the listings section
+1. **User Query**: Type or speak to the avatar (e.g., "Show me condos in Toronto under $2M")
+2. **AI Processing**: Gemini AI analyzes query and extracts search parameters
+3. **MLS Search**: AMPRE API fetches live listings from Toronto Regional Real Estate Board
+4. **Avatar Response**: HeyGen avatar speaks the results naturally
+5. **Visual Display**: Property cards appear below with full details
+6. **Interactive**: Click properties for detailed modal view with contact options
 
 ### 🧪 Test Queries
 
@@ -33,34 +36,60 @@ Try these sample queries to see the live listings in action:
 
 ### 🔧 Technical Implementation
 
-#### Backend
-- **Web Scraping**: Uses Cheerio + Axios for reliable data extraction
-- **Multiple Endpoints**: Scrapes various pages from andrewpisani.com
-- **Smart Parsing**: Intelligent extraction of property details
-- **Error Handling**: Graceful fallbacks when scraping fails
-- **Filtering**: Real-time filtering by price, location, beds, baths, type
+#### Avatar Integration
+- **HeyGen Component**: Custom React component with speech synthesis
+- **PostMessage API**: Communication between iframe and application
+- **Message Queue**: Sequential speech handling to prevent overlaps
+- **Status Indicators**: Real-time online/speaking/idle states
+
+#### Backend APIs
+- **AMPRE MLS API**: Live Toronto Regional Real Estate Board listings
+- **Gemini AI**: Natural language understanding and response generation
+- **Smart Parameter Extraction**: AI-powered search criteria detection
+- **OData Filtering**: Dynamic property filtering and sorting
+- **Image Loading**: Parallel fetch of property images
 
 #### Frontend
-- **Live Property Cards**: Dynamic display of scraped listings
-- **Agent Branding**: All listings show Andrew Pisani's contact information
-- **Click-to-View**: Direct links to full property details
-- **Responsive Design**: Beautiful display on all devices
+- **Interactive Avatar**: HeyGen-powered speaking avatar
+- **Real-time Chat**: Conversation history and context awareness
+- **Property Grid**: Responsive listing cards with hover effects
+- **Detail Modals**: Full property information with image galleries
+- **Contact Integration**: WhatsApp, phone, and Realtor.ca links
 
 ### 📱 API Endpoints
 
-#### Get Live Listings
+#### Chat with Avatar
 ```bash
-GET /api/listings
+POST /api/chat
 ```
 
-**Query Parameters:**
-- `search` - General search term
-- `location` - Specific location filter
-- `type` - Property type (condo, house, townhouse, etc.)
-- `minPrice` - Minimum price filter
-- `maxPrice` - Maximum price filter
-- `beds` - Minimum number of bedrooms
-- `baths` - Minimum number of bathrooms
+**Request Body:**
+```json
+{
+  "messages": [
+    { "role": "user", "content": "Show me condos in Toronto under $1M" }
+  ]
+}
+```
+
+**Response:**
+```json
+{
+  "reply": "Text response for display",
+  "avatarSpeech": "Optimized speech text",
+  "listings": [...],
+  "hasListings": true,
+  "searchDetected": true,
+  "listingsCount": 12
+}
+```
+
+#### HeyGen Streaming (Optional)
+```bash
+POST /api/heygen-stream
+```
+
+**Actions:** `start_session`, `speak`, `stop_session`
 
 **Example Response:**
 ```json
@@ -122,6 +151,11 @@ npm run dev
 #### Environment Variables
 ```bash
 GEMINI_API_KEY=your_gemini_api_key
+AMPRE_API_TOKEN=your_ampre_mls_token
+AMPRE_API_URL=https://query.ampre.ca
+
+# Optional: For advanced HeyGen features
+HEYGEN_API_KEY=your_heygen_api_key
 ```
 
 #### Testing
@@ -133,6 +167,40 @@ curl http://localhost:3000/api/listings?search=toronto
 # Visit http://localhost:3000 and ask about properties
 ```
 
+### 📚 Documentation
+
+- **[HEYGEN_INTEGRATION_GUIDE.md](HEYGEN_INTEGRATION_GUIDE.md)** - Complete setup and integration guide
+- **[TEST_AVATAR_INTEGRATION.md](TEST_AVATAR_INTEGRATION.md)** - Testing procedures
+- **[AVATAR_API_INTEGRATION_SUMMARY.md](AVATAR_API_INTEGRATION_SUMMARY.md)** - Integration overview
+
+### 🎉 Features in Action
+
+**Avatar Speaks:**
+- Welcome messages on load
+- Property search results
+- Listing announcements
+- Error messages and suggestions
+- Natural conversation flow
+
+**Live MLS Data:**
+- Real-time TREB listings
+- Property images and details
+- MLS numbers and links
+- Agent contact information
+- Days on market statistics
+
+**Smart Search:**
+- "Show me condos in Toronto under $2M"
+- "Find 3 bedroom houses in Mississauga"
+- "Properties between $800k and $1.5M"
+- "Commercial properties for sale"
+
 ---
 
-**Powered by Andrew Pisani - Right at Home Realty** 🏡 
+**Powered by:**
+- 🎭 HeyGen AI Avatar
+- 🤖 Google Gemini AI
+- 🏠 AMPRE MLS API (TREB)
+- 💼 Andrew Pisani - Right at Home Realty
+
+**Built by [kodekins.com](https://kodekins.com)** 🚀 

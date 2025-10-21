@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import HeyGenAvatar from "../components/HeyGenAvatar";
 
 export default function Home() {
   const [messages, setMessages] = useState([
@@ -15,9 +16,11 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [selectedListing, setSelectedListing] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [avatarReady, setAvatarReady] = useState(false);
+  const [avatarSpeaking, setAvatarSpeaking] = useState(false);
 
   const messagesEndRef = useRef(null);
-  const iframeRef = useRef(null);
+  const avatarRef = useRef(null);
 
   // Mount effect to prevent hydration issues
   useEffect(() => {
@@ -29,23 +32,31 @@ export default function Home() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Send postMessage to HeyGen iframe to start speaking automatically
+  // Handle avatar ready state
+  const handleAvatarReady = (avatarControls) => {
+    console.log('✅ Avatar is ready');
+    setAvatarReady(true);
+    avatarRef.current = avatarControls;
+  };
+
+  // Handle avatar speaking status
+  const handleAvatarSpeakingStatus = (speaking) => {
+    setAvatarSpeaking(speaking);
+  };
+
+  // Speak welcome message when avatar is ready
   useEffect(() => {
-    if (!iframeRef.current) return;
+    if (avatarReady && avatarRef.current && messages.length > 0) {
+      const welcomeMessage = messages[0].content;
+      // Speak the welcome message after a short delay
+      setTimeout(() => {
+        console.log('🎉 Speaking welcome message');
+        avatarRef.current.speak(welcomeMessage);
+      }, 1000);
+    }
+  }, [avatarReady]);
 
-    const host = "https://labs.heygen.com";
-
-    const startAvatar = () => {
-      const iframeWindow = iframeRef.current.contentWindow;
-      iframeWindow.postMessage({ type: "streaming-embed", action: "init" }, host);
-      iframeWindow.postMessage({ type: "streaming-embed", action: "show" }, host);
-    };
-
-    iframeRef.current.addEventListener("load", startAvatar);
-    return () => {
-      iframeRef.current.removeEventListener("load", startAvatar);
-    };
-  }, []);
+  // Don't duplicate announcement - avatar speech comes from API response only
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
@@ -66,12 +77,22 @@ export default function Home() {
 
       const data = await res.json();
       const assistantReply = data?.reply || "Sorry, I didn't catch that.";
+      const avatarSpeech = data?.avatarSpeech || assistantReply;
+
+      // Make avatar speak the response
+      if (avatarRef.current && avatarReady) {
+        console.log('🗣️ Making avatar speak response');
+        avatarRef.current.speak(avatarSpeech);
+      } else {
+        console.warn('⚠️ Avatar not ready, skipping speech');
+      }
 
       // Handle listings data if available
       console.log('Chat response data:', {
         hasListings: !!data.listings,
         listingsLength: data.listings?.length || 0,
         searchDetected: data.searchDetected,
+        avatarSpeech: avatarSpeech.substring(0, 50) + '...',
         listingsData: data.listings
       });
       
@@ -269,34 +290,28 @@ export default function Home() {
                 <div className="relative bg-black/50 border border-gray-800 rounded-lg p-6 backdrop-blur-sm">
                   <div className="text-center mb-4">
                     <div className="text-cyan-400 font-mono text-sm mb-2">
-                      PROPERTY ASSISTANT STATUS: <span className="text-green-400">ONLINE</span>
+                      PROPERTY ASSISTANT STATUS: <span className={avatarReady ? "text-green-400" : "text-yellow-400"}>{avatarReady ? "ONLINE" : "INITIALIZING..."}</span>
                     </div>
                     <div className="flex justify-center space-x-1 mb-4">
-                      <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
-                      <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-                      <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+                      <div className={`w-2 h-2 rounded-full ${avatarSpeaking ? 'bg-cyan-400 animate-pulse' : 'bg-gray-600'}`}></div>
+                      <div className={`w-2 h-2 rounded-full ${avatarSpeaking ? 'bg-purple-400 animate-pulse' : 'bg-gray-600'}`} style={{ animationDelay: '0.5s' }}></div>
+                      <div className={`w-2 h-2 rounded-full ${avatarSpeaking ? 'bg-cyan-400 animate-pulse' : 'bg-gray-600'}`} style={{ animationDelay: '1s' }}></div>
                     </div>
                   </div>
 
                   {/* Avatar Container */}
                   <div className="relative mb-6">
                     {/* Holographic Overlay Effects */}
-                    <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute inset-0 pointer-events-none z-10">
                       <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-purple-500/10 rounded-lg"></div>
                       <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-shimmer"></div>
                       <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-purple-400 to-transparent animate-shimmer" style={{ animationDelay: '1s' }}></div>
                     </div>
                     
-                    <div className="relative bg-black/30 rounded-lg overflow-hidden aspect-video">
-                      <iframe
-                        ref={iframeRef}
-                        src="https://labs.heygen.com/guest/streaming-embed?share=eyJxdWFsaXR5IjoiaGlnaCIsImF2YXRhck5hbWUiOiJLYXR5YV9DaGFpcl9TaXR0aW5nX3B1YmxpYyIsInByZXZpZXdJbWciOiJodHRwczovL2ZpbGVzMi5oZXlnZW4uYWkvYXZhdGFyL3YzL2IxZmY1ZWRiZjk2MjQyZTZhYzk0NjkyMjdkZjQwOTI0XzU1MzYwL3ByZXZpZXdfdGFyZ2V0LndlYnAiLCJuZWVkUmVtb3ZlQmFja2dyb3VuZCI6ZmFsc2UsImtub3dsZWRnZUJhc2VJZCI6ImI2MTU0ZGU1NTJhNTQzOWRhZTAzODUyOGI1NzI0ZTFlIiwidXNlcm5hbWUiOiI4NjAwMmUyMzA2Nzk0MTg5YjdjOTUyNWY1Njc1YmEyYiJ9"
-                        title="AP-Prime AI Assistant"
-                        className="w-full h-full cursor-pointer"
-                        allow="microphone; autoplay; camera"
-                        sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-presentation"
-                      />
-                    </div>
+                    <HeyGenAvatar
+                      onReady={handleAvatarReady}
+                      onSpeakingStatusChange={handleAvatarSpeakingStatus}
+                    />
                   </div>
 
                   {/* Chat Interface */}
@@ -763,6 +778,26 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* Footer */}
+      <footer className="relative border-t border-gray-800 py-8">
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black"></div>
+        <div className="relative z-10 container mx-auto px-6">
+          <div className="text-center">
+            <div className="text-gray-500 font-mono text-sm">
+              Design and developed by{' '}
+              <a 
+                href="https://kodekins.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-cyan-400 hover:text-cyan-300 transition-colors"
+              >
+                kodekins.com
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
